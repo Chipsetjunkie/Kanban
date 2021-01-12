@@ -234,27 +234,27 @@ export default class Columns extends Component {
                 <div className="container">
                     {this.state.active === 'all' || this.state.active === 'todo' ?
                         <div className="ToDo">
-                            <p>To Do</p>
+                            <p class="title">To Do</p>
                             {this.displayTasks(1)}
                         </div> : ''
                     }
                     {this.state.active === 'all' || this.state.active === 'progress' ?
                         <div className="InProgress">
-                            <p>In Progress</p>
+                            <p class="title">In Progress</p>
                             {this.displayTasks(2)}
                         </div> : ''
                     }
                     {this.state.active === 'all' || this.state.active === 'done' ?
 
                         <div className="Done">
-                            <p>Done</p>
+                            <p class="title">Done</p>
                             {this.displayTasks(3)}
                         </div> : ''
                     }
                     {
                         this.state.active === 'all' || this.state.active === 'fixed' ?
                             <div className="Fixed">
-                                <p>Fixed</p>
+                                <p class="title">Fixed</p>
                                 {this.displayTasks(4)}
                             </div> : ''
                     }

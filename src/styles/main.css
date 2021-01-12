@@ -18,8 +18,12 @@
   justify-content: space-around;
   width:100%;
   padding:15px;
-  margin-bottom: 30px;
-  box-shadow: 0px 5px 20px -16px rgba(0,0,0,1)
+  margin-bottom: 80px;
+  box-shadow: 0px 5px 20px -16px rgba(0,0,0,1);
+}
+
+.header>div{
+  width: 400px;
 }
 
 .header input{
@@ -47,6 +51,27 @@
   border-radius: 5px;
 }
 
+.title{
+  font-size: 22px;
+  color: rgba(27, 30 ,59);
+  position: relative;
+  top:-60px;
+  left:20px;
+}
+
+@media only screen and (max-width: 700px) {
+
+  .header{
+    display: flex;
+    flex-direction: column;
+  }
+  .header>div{
+    padding:10px;
+  }
+
+}
+
+
 @media only screen and (max-width: 400px) {
   .container{
     display: flex;
@@ -58,9 +83,9 @@
     display:inline-flex;
     margin-left: 10px;
     width:auto;
-    margin-top: 20px;
-    background: orange;
+    margin-top: 50px;
     height: 250px;
     min-height: auto;
   }
+ 
 }
