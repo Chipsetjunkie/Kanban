@@ -1,0 +1,72 @@
+body{
+    font-family: sans-serif;
+}
+
+.cardDiv{
+    display: flex;
+    justify-content: space-around;  
+    padding: 10px;
+    margin: 10px;
+
+  }
+
+
+.card{
+    background: white;
+    width: 250px;
+    height: 150px;
+    border: 1px solid rgba(0,0,255,0.2);
+    box-shadow: 0px 5px 20px -16px rgba(23,42,100,0.6),0px -1px 20px -16px rgba(23,42,100,0.6);
+    padding:10px;
+    border-radius:20px;
+    margin-top:10px;
+}
+
+.options{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.options>div>p{
+    font-size: 12px;
+}
+
+.options>div:nth-last-child(1){
+    display: flex;
+    justify-content: space-around;
+    width: 25%;
+}
+
+.options  img{
+    cursor: pointer;
+}
+
+.content{
+    padding-left: 10px;
+}
+
+.content #text{
+    margin-top:30px;
+    width: 200px;
+    height: 55px;
+    overflow:scroll;
+}
+
+.content #date{
+    color:gray;
+    font-size: 10px;
+}
+
+textarea{
+    background:rgba(0,0,0,0);
+    margin-top: 10px;
+    border: 1px solid rgba(0,0,255,0.2);
+    border-radius: 5px;
+}
+
+select{
+    background: rgba(0,0,0,0);
+    border: 0;
+    font-size: 12px;
+}
