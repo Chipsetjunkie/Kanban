@@ -47,7 +47,7 @@
   background: rgba(0,0,0,0);
   border: 1px solid rgba(0,0,0,0.2);
   padding: 5px;
-  margin-left:10px; 
+  margin-left:10px;
   border-radius: 5px;
 }
 
@@ -80,12 +80,16 @@
   }
 
   .container > div{
-    display:inline-flex;
+    display:flex;
     margin-left: 10px;
-    width:auto;
+    flex-wrap: wrap;
+    width: 100%;
     margin-top: 50px;
-    height: 250px;
     min-height: auto;
   }
- 
+
+  .title{
+    min-width: 100px;
+  }
+
 }
