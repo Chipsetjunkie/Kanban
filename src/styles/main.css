@@ -38,6 +38,15 @@
   color:white;
 }
 
+
+.select-layout{
+  background: rgba(0,0,0,0);
+  border: 1px solid rgba(0,0,0,0.2);
+  padding: 5px;
+  margin-left:10px; 
+  border-radius: 5px;
+}
+
 @media only screen and (max-width: 400px) {
   .container{
     display: flex;

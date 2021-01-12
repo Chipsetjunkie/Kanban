@@ -23,14 +23,33 @@ export default class Columns extends Component {
             "fixed": {
                 contents: []
             },
+        },
+        active: "all",
+        search: ""
+    }
+
+    componentDidMount() {
+        const data = JSON.parse(localStorage.getItem("tasks"))
+        if (data) {
+          this.setState({ tasks: data.tasks, columns: data.columns})
         }
 
     }
+
+    componentDidUpdate() {
+        const data = {tasks:this.state.tasks, columns:this.state.columns}
+        localStorage.setItem("tasks", JSON.stringify(data));
+      }
+
 
     clickHandlerTask = e => {
         this.setState({ inputAdd: e.target.value })
     }
 
+
+    changeHandlerSearch = e => {
+        this.setState({ search: e.target.value })
+    }
 
     createTask = () => {
         const id = uuidv4()
@@ -51,7 +70,7 @@ export default class Columns extends Component {
                 ...this.state.columns,
                 "todo": {
                     contents: [
-                        ...this.state.columns.todo.contents,
+                        ...this.state.columns["todo"].contents,
                         id
                     ]
                 }
@@ -62,11 +81,11 @@ export default class Columns extends Component {
     deleteTask = id => {
 
         const active = this.state.tasks['task_' + id].active
-        const update_task = Object.assign(this.state.tasks, {})
-        delete update_task['task_' + id]
+        const updateTask = Object.assign(this.state.tasks, {})
+        delete updateTask['task_' + id]
         const updated_content = this.state.columns[active].contents.filter(i => i !== id)
         this.setState({
-            tasks: update_task,
+            tasks: updateTask,
             columns: {
                 ...this.state.columns,
                 [active]: {
@@ -78,25 +97,24 @@ export default class Columns extends Component {
     }
 
     editTask = id => {
-        const updated = this.state.list.map(i => {
-            if (i.id === id) {
-                i.modify = !i.modify
-            }
-            return i
-        })
-        this.setState({ list: updated })
+        const updateTasks = Object.assign(this.state.tasks, {})
+        const task= updateTasks['task_'+id]
+        task.modify = !task.modify
+        updateTasks['task_'+id] = task
+        this.setState({ tasks: updateTasks })
     }
 
     editTaskContent = (e, id) => {
-        const updated = this.state.list.map(i => {
-            if (i.id === id) {
-                i.text = e.target.value
-            }
-            return i
-        })
-        this.setState({ list: updated })
+        const updateTasks = Object.assign(this.state.tasks, {})
+        const task= updateTasks['task_'+id]
+        task.text = e.target.value
+        updateTasks['task_'+id] = task
+        this.setState({ tasks: updateTasks })
     }
 
+    layoutChange = e => {
+        this.setState({ active: e.target.value })
+    }
 
     statusChange = (e, id) => {
         console.log(this.state.columns)
@@ -125,54 +143,68 @@ export default class Columns extends Component {
     }
 
     displayTasks = n => {
+        let cleanedData = Object.entries(this.state.tasks).filter(i => i[1].text.includes(this.state.search))
+        cleanedData = cleanedData.map(i => {
+            return i[0]
+        })
         switch (n) {
             case 1:
                 return this.state.columns.todo.contents.map(i => {
-                    const data = this.state.tasks['task_' + i]
-                    console.log(i,"todo")
-                    return <Card
-                        key={i}
-                        data={data}
-                        helper={
-                            { purge: this.deleteTask },
-                            { statusChange: this.statusChange }}
-                    />
+                    if (cleanedData.includes('task_' + i)) {
+
+                        const data = this.state.tasks['task_' + i]
+                        return <Card
+                            key={i}
+                            data={data}
+                            helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask:this.editTask, editContent:this.editTaskContent }}
+                        />
+                    }
+                    else{
+                        return ""
+                    }
                 })
 
             case 2:
                 return this.state.columns.progress.contents.map(i => {
-                    const data = this.state.tasks['task_' + i]
-                    console.log(i,"p")
-                   
-                    return <Card
-                        key={i}
-                        data={data}
-                        helper={
-                            { purge: this.deleteTask },
-                            { statusChange: this.statusChange }}
-                    />
+                    if (cleanedData.includes('task_' + i)) {
+
+                        const data = this.state.tasks['task_' + i]
+                        return <Card
+                            key={i}
+                            data={data}
+                            helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask:this.editTask, editContent:this.editTaskContent }}
+                        />
+                    }else{
+                        return ""
+                    }
                 })
             case 3:
                 return this.state.columns.done.contents.map(i => {
-                    const data = this.state.tasks['task_' + i]
-                    return <Card
-                        key={i}
-                        data={data}
-                        helper={
-                            { purge: this.deleteTask },
-                            { statusChange: this.statusChange }}
-                    />
+                    if (cleanedData.includes('task_' + i)) {
+
+                        const data = this.state.tasks['task_' + i]
+                        return <Card
+                            key={i}
+                            data={data}
+                            helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask:this.editTask, editContent:this.editTaskContent }}
+                        />
+                    }else{
+                        return ""
+                    }
                 })
             case 4:
                 return this.state.columns.fixed.contents.map(i => {
-                    const data = this.state.tasks['task_' + i]
-                    return <Card
-                        key={i}
-                        data={data}
-                        helper={
-                            { purge: this.deleteTask },
-                            { statusChange: this.statusChange }}
-                    />
+                    if (cleanedData.includes('task_' + i)) {
+
+                        const data = this.state.tasks['task_' + i]
+                        return <Card
+                            key={i}
+                            data={data}
+                            helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask:this.editTask, editContent:this.editTaskContent }}
+                        />
+                    }else{
+                        return ""
+                    }
                 })
             default:
                 return
@@ -189,22 +221,43 @@ export default class Columns extends Component {
                         <button onClick={this.createTask}>Create!!</button>
                     </div>
                     <div>
-                        <select></select>
+                        <input type="search" placeholder="Search for tasks" value={this.state.search} onChange={this.changeHandlerSearch}></input>
+                        <select className="select-layout" name="cars" id="cars" value={this.state.active} onChange={this.layoutChange}>
+                            <option value="all" >All</option>
+                            <option value="todo" >Todo</option>
+                            <option value="progress" >In Progress</option>
+                            <option value="done" >Done</option>
+                            <option value="fixed" >Fixed</option>
+                        </select>
                     </div>
                 </div>
                 <div className="container">
-                    <div className="ToDo">
-                        {this.displayTasks(1)}
-                    </div>
-                    <div className="InProgress">
-                        {this.displayTasks(2)}
-                    </div>
-                    <div className="Done">
-                        {this.displayTasks(3)}
-                    </div>
-                    <div className="Fixed">
-                        {this.displayTasks(4)}
-                    </div>
+                    {this.state.active === 'all' || this.state.active === 'todo' ?
+                        <div className="ToDo">
+                            <p>To Do</p>
+                            {this.displayTasks(1)}
+                        </div> : ''
+                    }
+                    {this.state.active === 'all' || this.state.active === 'progress' ?
+                        <div className="InProgress">
+                            <p>In Progress</p>
+                            {this.displayTasks(2)}
+                        </div> : ''
+                    }
+                    {this.state.active === 'all' || this.state.active === 'done' ?
+
+                        <div className="Done">
+                            <p>Done</p>
+                            {this.displayTasks(3)}
+                        </div> : ''
+                    }
+                    {
+                        this.state.active === 'all' || this.state.active === 'fixed' ?
+                            <div className="Fixed">
+                                <p>Fixed</p>
+                                {this.displayTasks(4)}
+                            </div> : ''
+                    }
                 </div>
             </div>
         )
