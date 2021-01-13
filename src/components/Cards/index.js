@@ -11,7 +11,7 @@ import "../../styles/card.css";
 export default class Card extends Component {
 
     render() {
-        const { id, text, modify, completed, date, active } = this.props.data
+        const { id, text, modify, date, active } = this.props.data
         const {purge, editTask, editContent, statusChange} = this.props.helper
 
         return (
