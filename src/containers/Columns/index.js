@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 //css
 import "../../styles/main.css"
 
-
-
 const COLUMNS = ["todo", "progress", "done", "fixed"]
 
 export default class Columns extends Component {
@@ -159,29 +157,26 @@ export default class Columns extends Component {
     displayTasks = n => {
         let cleanedData = Object.entries(this.state.tasks).filter(i => i[1].text.includes(this.state.search))
         cleanedData = cleanedData.map(i => i[0])
-        
-        const columns = COLUMNS.map(i => (
-            this.state.columns[i].contents.map(j => {
-                if (cleanedData.includes('task_' + j)) {
-                    const data = this.state.tasks['task_' + j]
-                    return <Card
-                        key={j}
-                        data={data}
-                        helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask: this.editTask, editContent: this.editTaskContent }}
-                    />
-                }
-                else {
-                    return ""
-                }
-            })
-        ))
-        return COLUMNS.map((i, id) => (
-            <>
-                {this.state.active === 'all' || this.state.active === i ?
-                    <div key={id}>
-                        <p class="title">{i}</p>
-                        {columns[id]}
-                    </div> : ""}
+
+        return COLUMNS.map(i => (
+            <>{this.state.active === 'all' || this.state.active === i ?
+                <div key={i}>
+                    <p class="title">{i}</p>
+                    {
+                        this.state.columns[i].contents.map(j => {
+                            if (cleanedData.includes('task_' + j)) {
+                                const data = this.state.tasks['task_' + j]
+                                return <Card
+                                    key={j}
+                                    data={data}
+                                    helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask: this.editTask, editContent: this.editTaskContent }}
+                                />
+                            }
+                            else {
+                                return ""
+                            }
+                        })}
+                </div> : ""}
             </>
         ))
     }
