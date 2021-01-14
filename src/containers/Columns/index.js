@@ -26,18 +26,27 @@ export default class Columns extends Component {
                 contents: []
             },
         },
-        drop:{search:"", active:[]},
+        drop: { search: "", active: [] },
         show: false
 
     }
 
     componentDidMount() {
         const data = JSON.parse(localStorage.getItem("tasks"))
-        if (data) {
-            this.setState({ tasks: data.tasks, columns: data.columns })
+        let params = new URLSearchParams(window.location.search.slice(1));
+        let search = params.get('q')
+        let active = params.get('selected')
+        
+        if ( search || active) {
+            active = active? JSON.parse(active):[]
+            if (data) {
+                this.setState({ tasks: data.tasks, columns: data.columns, drop:{search, active}})
+            }
+        }else{
+            if (data) {
+                this.setState({ tasks: data.tasks, columns: data.columns })
+            }
         }
-        // /?q=sathya&selected=[1]
-        //console.log(window.location.pathname)
     }
 
     componentDidUpdate() {
@@ -55,12 +64,12 @@ export default class Columns extends Component {
         this.setState({ search: e.target.value })
     }
 
-    layoutSubmitHandler = data =>{
-        this.setState({drop:data})
+    layoutSubmitHandler = data => {
+        this.setState({ drop: data })
     }
 
-    toggleDropdown= () =>{
-        this.setState({show:!this.state.show})
+    toggleDropdown = () => {
+        this.setState({ show: !this.state.show })
     }
 
     createTask = () => {
@@ -162,11 +171,10 @@ export default class Columns extends Component {
 
     displayTasks = () => {
         let cleanedData = Object.entries(this.state.tasks).filter(i => i[1].text.includes(this.state.drop.search))
-        console.log(cleanedData)
         cleanedData = cleanedData.map(i => i[0])
         return Object.keys(this.state.columns).map((i, id) => (
             <Fragment key={i + "div"}>
-                {this.state.drop.active.length === 0  || this.state.drop.active.includes(id)?
+                {this.state.drop.active.length === 0 || this.state.drop.active.includes(id) ?
                     <div>
                         <p className="title">{i}</p>
                         {
@@ -200,10 +208,10 @@ export default class Columns extends Component {
                         clickHandlerTask: this.clickHandlerTask,
                         createTask: this.createTask,
                         show: this.state.show,
-                        toggle:this.toggleDropdown
+                        toggle: this.toggleDropdown
                     }}
                 >
-                    <DropDown 
+                    <DropDown
                         data={Object.keys(this.state.columns)}
                         submitHandler={this.layoutSubmitHandler}
                         inputData={this.state.drop}
