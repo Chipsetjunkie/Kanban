@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Card from "../../components/Cards";
+import Header from "../../components/Header";
+import DropDown from "../DropDown";
 import { v4 as uuidv4 } from 'uuid';
 
 //css
 import "../../styles/main.css"
-
-const COLUMNS = ["todo", "progress", "done", "fixed"]
+import "../../styles/dropdown.css"
 
 export default class Columns extends Component {
     state = {
@@ -25,8 +26,9 @@ export default class Columns extends Component {
                 contents: []
             },
         },
-        active: "all",
-        search: ""
+        drop:{search:"", active:[]},
+        show: false
+
     }
 
     componentDidMount() {
@@ -34,7 +36,8 @@ export default class Columns extends Component {
         if (data) {
             this.setState({ tasks: data.tasks, columns: data.columns })
         }
-
+        // /?q=sathya&selected=[1]
+        //console.log(window.location.pathname)
     }
 
     componentDidUpdate() {
@@ -50,6 +53,14 @@ export default class Columns extends Component {
 
     changeHandlerSearch = e => {
         this.setState({ search: e.target.value })
+    }
+
+    layoutSubmitHandler = data =>{
+        this.setState({drop:data})
+    }
+
+    toggleDropdown= () =>{
+        this.setState({show:!this.state.show})
     }
 
     createTask = () => {
@@ -112,12 +123,7 @@ export default class Columns extends Component {
         this.setState({ tasks: updateTasks })
     }
 
-    layoutChange = e => {
-        this.setState({ active: e.target.value })
-    }
-
     statusChange = (e, id) => {
-        console.log(this.state.columns)
         const task = this.state.tasks['task_' + id]
         const prevActive = task.active
         const updatedContent = this.state.columns[prevActive].contents.filter(i => i !== id)
@@ -143,60 +149,67 @@ export default class Columns extends Component {
     }
 
     showOptions = () => {
-        let options = ['all'].concat(COLUMNS)
+        let options = ['all'].concat(Object.keys(this.state.columns))
         let keypair = { "all": "All", "todo": "Todo", "progress": "In Progress", "done": "Done", "fixed": "Fixed" }
         return options.map(i => {
             if (keypair[i]) {
-                return <option key={i} value={i}>{keypair[i]}</option>
+                return <option key={i + "option"} value={i}>{keypair[i]}</option>
             } else {
-                return <option key={i} value={i}>{i}</option>
+                return <option key={i + "option"} value={i}>{i}</option>
             }
         })
     }
 
-    displayTasks = n => {
-        let cleanedData = Object.entries(this.state.tasks).filter(i => i[1].text.includes(this.state.search))
+    displayTasks = () => {
+        let cleanedData = Object.entries(this.state.tasks).filter(i => i[1].text.includes(this.state.drop.search))
+        console.log(cleanedData)
         cleanedData = cleanedData.map(i => i[0])
+        return Object.keys(this.state.columns).map((i, id) => (
+            <Fragment key={i + "div"}>
+                {this.state.drop.active.length === 0  || this.state.drop.active.includes(id)?
+                    <div>
+                        <p className="title">{i}</p>
+                        {
+                            this.state.columns[i].contents.map(j => {
+                                if (cleanedData.includes('task_' + j)) {
+                                    const data = this.state.tasks['task_' + j]
+                                    return <Card
+                                        key={j}
+                                        data={data}
+                                        helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask: this.editTask, editContent: this.editTaskContent }}
+                                    />
+                                }
+                                else {
+                                    return ""
+                                }
+                            })}
 
-        return COLUMNS.map(i => (
-            <>{this.state.active === 'all' || this.state.active === i ?
-                <div key={i}>
-                    <p class="title">{i}</p>
-                    {
-                        this.state.columns[i].contents.map(j => {
-                            if (cleanedData.includes('task_' + j)) {
-                                const data = this.state.tasks['task_' + j]
-                                return <Card
-                                    key={j}
-                                    data={data}
-                                    helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask: this.editTask, editContent: this.editTaskContent }}
-                                />
-                            }
-                            else {
-                                return ""
-                            }
-                        })}
-                </div> : ""}
-            </>
+                    </div> : ""}
+            </Fragment>
         ))
+
     }
 
 
     render() {
         return (
             <div>
-                <div className="header">
-                    <div>
-                        <input type="text" placeholder="Add a todo..." value={this.state.inputAdd} onChange={this.clickHandlerTask}></input>
-                        <button onClick={this.createTask}>Create!!</button>
-                    </div>
-                    <div>
-                        <input type="search" placeholder="Search for tasks" value={this.state.search} onChange={this.changeHandlerSearch}></input>
-                        <select className="select-layout" name="cars" id="cars" value={this.state.active} onChange={this.layoutChange}>
-                            {this.showOptions()}
-                        </select>
-                    </div>
-                </div>
+                <Header
+                    data={{
+                        inputAdd: this.inputAdd,
+                        clickHandlerTask: this.clickHandlerTask,
+                        createTask: this.createTask,
+                        show: this.state.show,
+                        toggle:this.toggleDropdown
+                    }}
+                >
+                    <DropDown 
+                        data={Object.keys(this.state.columns)}
+                        submitHandler={this.layoutSubmitHandler}
+                        inputData={this.state.drop}
+                        toggle={this.toggleDropdown}
+                    />
+                </Header>
                 <div className="container">
                     {this.displayTasks()}
                 </div>
