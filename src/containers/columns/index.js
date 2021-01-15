@@ -72,7 +72,7 @@ export default class Columns extends Component {
         const q = "?q="+data.search
         const selected = "selected="+JSON.stringify(active)
         window.history.pushState(null, null, q+'&'+selected)
-        this.setState({ drop: data })
+        this.setState(()=>{return{ drop: data }})
     }
 
     toggleDropdown = () => {

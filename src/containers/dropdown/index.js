@@ -21,15 +21,15 @@ export default class DropDown extends Component {
     }
 
     changeHandlerSearch = e => {
-        this.setState({
+        const updated = {
             ...this.state,
             inputData: {
                 ...this.state.inputData,
                 search: e.target.value
             }
         }
-        )
-
+        this.props.submitHandler({...updated.inputData})
+        this.setState(()=>{return {...updated}})
     }
 
     changeHandlerActive = id => {
