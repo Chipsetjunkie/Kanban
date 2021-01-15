@@ -16,6 +16,7 @@
 
 .dropdown-options{position: absolute;
     z-index: 4;
+    top:75px;
 }
 
 
@@ -23,7 +24,7 @@
     display: inline-block;
     padding: 8px;
     box-shadow: 0px 5px 20px -16px rgba(23, 42, 100, 0.9), -2px -1px 20px -16px rgba(23, 42, 100, 0.6);
-    background:white;
+    background: rgba(255,255,255,0.9);
 }
 
 .dropdown {
@@ -41,7 +42,7 @@
     margin-right: 1em;
 }
 
-.general-options {
+/* .general-options {
     color: rgba(27, 30, 59);
     display: flex;
     justify-content: space-between;
@@ -57,7 +58,8 @@
 
 .general-options *:hover {
     border-bottom: 2px solid rgba(167, 117, 238);
-}
+    transition: 0.3s;
+} */
 
 .search-bar {
     margin: 5px;
@@ -94,6 +96,7 @@
 
 .final-options p:hover {
     border-bottom: 2px solid rgba(167, 117, 238);
+    transition: 0.3s;
 }
 
 .final-options button {

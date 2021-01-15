@@ -13,17 +13,16 @@ export default class Card extends Component {
     render() {
         const { id, text, modify, date, active } = this.props.data
         const {purge, editTask, editContent, statusChange} = this.props.helper
-
+        const col = this.props.col
         return (
             <div className="cardDiv">
                 <div className="card">
                     <div className="options">
                         <div>
                             <select className="select-card" name="cars" id="cars" value={active} onChange={e=>statusChange(e,id)}>
-                                <option value="todo" >Todo</option>
-                                <option value="progress" >In Progress</option>
-                                <option value="done" >Done</option>
-                                <option value="fixed" >Fixed</option>
+                                {col.map(i=>(
+                                     <option value={i} >{i}</option>
+                                ))}
                             </select>
                         </div>
                         <div>
