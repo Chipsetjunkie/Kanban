@@ -89,7 +89,7 @@ export default class Columns extends Component {
     }
 
     toggleDropdown = () => {
-        this.setState({ show: !this.state.show })
+        this.setState({ showOptions: !this.state.showOptions })
     }
 
 
@@ -146,6 +146,7 @@ export default class Columns extends Component {
                 ...this.state.dropCreate,
                 search: ""
             },
+            showOptions:false,
             showModal: false,
             activeModal: null
         })
@@ -263,7 +264,7 @@ export default class Columns extends Component {
 
 
     render() {
-        let { dropCreate, columns, drop, show, showModal, order, newTask, activeModal } = this.state
+        let { dropCreate, columns, drop, showOptions, showModal, order, newTask, activeModal } = this.state
         return (
             <div className="main-container">
                 <Modal
@@ -289,7 +290,7 @@ export default class Columns extends Component {
                     <Header
                         data={{
                             createTask: this.create,
-                            show,
+                            showOptions,
                             toggle: this.toggleDropdown,
                             modalOpen: this.open,
                             length: this.state.order.length
