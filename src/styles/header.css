@@ -25,5 +25,9 @@
     border-radius: 5px;
     padding: 10px;
     color:white;
+    cursor: pointer;
   }
   
+  .header button:nth-child(2):disabled{
+    background: rgba(27, 30 ,59,0.2);
+  }

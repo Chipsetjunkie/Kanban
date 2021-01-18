@@ -1,0 +1,54 @@
+.task-main{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px
+}
+
+.task-main>div{
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    align-items: center;
+
+}
+
+.task-main > div:first-of-type{
+    border: 3px solid rgba(170,200,245,1);
+    border-style: dashed;
+    margin-right: 15px;
+    padding: 4px;
+}
+
+.task-main > div > img{
+    background: rgba(209,226,244);
+    padding: 10px;
+}
+
+.task-modal{
+    background:white;
+    padding: 15px;
+    height: 250px;
+    padding-bottom: 0px;
+    padding-top: 1px;
+    border-radius: 5px;
+}
+
+.task-close{
+    display:flex;
+    justify-content:flex-end;
+}
+
+.task-close > p{
+    cursor: pointer;
+}
+
+
+.task-modal>div:last-of-type{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:10px;
+    cursor: pointer;
+}
+
+

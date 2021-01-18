@@ -13,32 +13,38 @@ body{
 
 .card{
     background: white;
-    width: 250px;
-    height: 150px;
+    width: auto;
+    height: auto;
     border: 1px solid rgba(0,0,255,0.2);
     box-shadow: 0px 5px 20px -16px rgba(23,42,100,0.6),0px -1px 20px -16px rgba(23,42,100,0.6);
     padding:10px;
+    padding-top: 0;
     border-radius:20px;
     margin-top:10px;
 }
 
 .options{
     display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
-.options>div>p{
-    font-size: 12px;
+.options>div:nth-last-child(2){
+    position: relative;
+    background: white;
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0px 5px 20px -16px rgba(23,42,100,1),0px -1px 20px -16px rgba(23,42,100,1);
+    top:-20px;
+    left:-30px;
 }
 
 .options>div:nth-last-child(1){
     display: flex;
     justify-content: space-around;
+    flex-direction: column;
     width: 25%;
 }
 
-.options  img{
+.options img{
     cursor: pointer;
 }
 
@@ -48,7 +54,7 @@ body{
 
 .content #text{
     margin-top:30px;
-    width: 200px;
+    width: 100px;
     height: 55px;
     overflow:scroll;
 }
@@ -58,15 +64,10 @@ body{
     font-size: 10px;
 }
 
-textarea{
-    background:rgba(0,0,0,0);
-    margin-top: 10px;
-    border: 1px solid rgba(0,0,255,0.2);
-    border-radius: 5px;
-}
-
 .select-card{
     background: rgba(0,0,0,0);
     border: 0;
     font-size: 12px;
 }
+
+/* rgb(138,96,245) */

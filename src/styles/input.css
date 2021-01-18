@@ -1,6 +1,7 @@
 
 .container-create{
     display: inline-block;
+    margin:10px;
 }
 
 .input-section {
@@ -12,8 +13,8 @@
 .input-section #create-input {
     border: 0;
     padding-left: 5px;
-    margin:2px;
-    width:200px;
+    width:150px;
+    margin:1px;
     
 }
 

@@ -2,12 +2,16 @@ body{
   font-family:sans-serif;
 }
 
+.main-container{
+  width: 98%;
+}
+
 .container{
   display: flex;
   justify-content: space-around;
   min-width: 980px;
   padding-top: 80px;
-
+  overflow-y:scroll;
 }
 
 .container > div{

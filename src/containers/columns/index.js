@@ -4,7 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 import Card from "../../components/cards";
 import Header from "../../components/header";
 import Input from "../../components/input";
+import LaneModal from "../../components/lanemodal";
+import TaskModal from "../../components/taskmodal";
 
+
+import Modal from "../modal";
 import DropDown from "../dropdown";
 
 //css
@@ -14,58 +18,64 @@ import "../../styles/dropdown.css"
 export default class Columns extends Component {
     state = {
         tasks: {},
-        columns: {
-            "todo": {
-                contents: []
-            },
-            "progress": {
-                contents: []
-            },
-            "done": {
-                contents: []
-            },
-            "fixed": {
-                contents: []
-            },
-        },
+        columns: {},
+        newTask: { date: "", title: "", image: "", edit: false, id: null },
+        order: [],
         drop: { search: "", active: [] },
         dropCreate: { search: "", active: "Task", options: ['Task', 'Column'] },
         show: false,
-        showCreate: false,
+        showModal: false,
+        activeModal: null
 
     }
 
     componentDidMount() {
         const data = JSON.parse(localStorage.getItem("tasks"))
+        const ord = data ? Object.keys(data.columns) : []
         let params = new URLSearchParams(window.location.search.slice(1));
         let search = params.get('q')
         const keys = { "todo": 0, "progress": 1, "done": 2, "fixed": 3 }
         let active = params.get('selected')
-
         if (search || active) {
             active = active ? JSON.parse(active).map(i => keys[i]) : []
             if (data) {
-                this.setState({ tasks: data.tasks, columns: data.columns, drop: { search, active } })
+                this.setState({ tasks: data.tasks, columns: data.columns, drop: { search, active }, order: ord })
             }
         } else {
             if (data) {
-                this.setState({ tasks: data.tasks, columns: data.columns })
+                this.setState({ tasks: data.tasks, columns: data.columns, order: ord })
             }
         }
     }
 
     componentDidUpdate() {
-        const data = { tasks: this.state.tasks, columns: this.state.columns }
-        localStorage.setItem("tasks", JSON.stringify(data));
+        // const data = { tasks: this.state.tasks, columns: this.state.columns }
+        // localStorage.setItem("tasks", JSON.stringify(data));
     }
 
     reset = () => {
         this.setState({
             show: false,
-            showCreate: false
         })
     }
 
+    // **************  Change Listener
+
+    changeTask = data => {
+        this.setState({ newTask: data })
+    }
+
+
+
+    // **************   Modal Controls
+    open = name => {
+        console.log("entered")
+        this.setState({ showModal: true, activeModal: name })
+    }
+
+    close = () => {
+        this.setState({ showModal: false, activeModal: null })
+    }
 
     // **************   Filter DropDown
 
@@ -83,70 +93,44 @@ export default class Columns extends Component {
     }
 
 
-    // ***************   Input Dropdown
-    changeHandlerTask = e => {
-        this.setState({
-            dropCreate: {
-                ...this.state.dropCreate,
-                search: e.target.value
-            }
-        })
-    }
-
-    toggleCreateDropdown = () => {
-        this.setState({ showCreate: !this.state.showCreate })
-    }
-
-    changeCreateType = v => {
-        this.setState({
-            dropCreate: {
-                ...this.state.dropCreate,
-                active: v
-            },
-            showCreate: !this.state.showCreate
-        })
-    }
 
 
     // ***************   Create
 
-    create = () => {
-        const autoFunction = { 'Task': this.createTask, 'Column': this.createColumn }
-        autoFunction[this.state.dropCreate.active]()
+    TaskCreator = (data) => {
+        if (!data.edit) {
+            this.createTask(data)
+        } else {
+            this.editTaskContent(data)
+        }
     }
-
 
     // **************   Column creation
 
-    createColumn = () => {
-        let title = this.state.dropCreate.search
-        this.setState({
-            columns: {
-                ...this.state.columns,
-                [title]:{
-                    contents:[]
-                }
-            },
-            dropCreate: {
-                ...this.state.dropCreate,
-                search:""
-            }
-        })
+
+
+    createColumn = (columns, order) => {
+        this.setState({ columns, order, showModal: false, activeModal: null })
     }
 
     // ************** Task creations
-    createTask = () => {
+
+
+
+    createTask = (data) => {
+        console.log("entered create")
         const id = uuidv4()
-        const i = this.state.dropCreate.search
+        const i = data.title
         this.setState({
             tasks: {
                 ...this.state.tasks,
                 ["task_" + id]: {
                     id,
                     text: i,
-                    date: Date(),
+                    date: data.date,
                     modify: false,
-                    active: "todo"
+                    active: "todo",
+                    image: data.image
                 }
             },
             columns: {
@@ -161,7 +145,9 @@ export default class Columns extends Component {
             dropCreate: {
                 ...this.state.dropCreate,
                 search: ""
-            }
+            },
+            showModal: false,
+            activeModal: null
         })
     }
 
@@ -184,19 +170,27 @@ export default class Columns extends Component {
     }
 
     editTask = id => {
+        console.log(id)
         const updateTasks = Object.assign(this.state.tasks, {})
         const task = updateTasks['task_' + id]
+        let newTask = task.modify ? { title: "", image: "", date: "", edit: false, id: null } :
+            { title: task.text, image: task.image, date: task.date, edit: true, id }
+
         task.modify = !task.modify
         updateTasks['task_' + id] = task
-        this.setState({ tasks: updateTasks })
+        this.setState({ tasks: updateTasks, newTask, showModal: !this.state.showModal })
     }
 
-    editTaskContent = (e, id) => {
-        const updateTasks = Object.assign(this.state.tasks, {})
-        const task = updateTasks['task_' + id]
-        task.text = e.target.value
-        updateTasks['task_' + id] = task
-        this.setState({ tasks: updateTasks })
+    editTaskContent = (data) => {
+        console.log("entered edit")
+        const updateTasks = { ...this.state.tasks }
+        const task = updateTasks['task_' + data.id]
+        console.log(task)
+        task.text = data.title
+        task.date = data.date
+        task.image = data.image
+        updateTasks['task_' + data.id] = task
+        this.setState({ tasks: updateTasks, showLaneModal: false, newTask: { title: "", image: "", date: "", edit: false, id: null } })
     }
 
     statusChange = (e, id) => {
@@ -239,12 +233,12 @@ export default class Columns extends Component {
     displayTasks = () => {
         let cleanedData = Object.entries(this.state.tasks).filter(i => i[1].text.includes(this.state.drop.search))
         cleanedData = cleanedData.map(i => i[0])
-        let col = Object.keys(this.state.columns) 
+        let col = [...this.state.order]
         return col.map((i, id) => (
             <Fragment key={i + "div"}>
                 {this.state.drop.active.length === 0 || this.state.drop.active.includes(id) ?
-                    <div>
-                        <p className="title">{i}</p>
+                    <div className="swimlane">
+                        <p className="title">{i} {this.state.columns[i].contents.length}</p>
                         {
                             this.state.columns[i].contents.map(j => {
                                 if (cleanedData.includes('task_' + j)) {
@@ -253,7 +247,7 @@ export default class Columns extends Component {
                                         key={j}
                                         data={data}
                                         helper={{ purge: this.deleteTask, statusChange: this.statusChange, editTask: this.editTask, editContent: this.editTaskContent }}
-                                        col = {col}
+                                        col={col}
                                     />
                                 }
                                 else {
@@ -269,26 +263,38 @@ export default class Columns extends Component {
 
 
     render() {
-        let { dropCreate, columns, drop, show, showCreate } = this.state
+        let { dropCreate, columns, drop, show, showModal, order, newTask, activeModal } = this.state
         return (
-            <div>
-                <div>
+            <div className="main-container">
+                <Modal
+                    showModal={showModal}
+                    active={activeModal}
+                >
+                    <LaneModal
+                        closeModal={this.close}
+                        data={{
+                            order: [...order],
+                            cols: columns
+                        }}
+                        createColumn={this.createColumn}
+                    />
+                    <TaskModal
+                        closeModal={this.close}
+                        changeHandler={this.changeTask}
+                        newTask={newTask}
+                        createTask={this.TaskCreator}
+                    />
+                </Modal>
+                <div style={{ filter: "" }}>
                     <Header
                         data={{
                             createTask: this.create,
                             show,
-                            toggle: this.toggleDropdown
+                            toggle: this.toggleDropdown,
+                            modalOpen: this.open,
+                            length: this.state.order.length
                         }}
                     >
-                        <Input
-                            data={{
-                                input: dropCreate,
-                                changeHandlerTask: this.changeHandlerTask,
-                                show: showCreate,
-                                toggle: this.toggleCreateDropdown,
-                                change: this.changeCreateType
-                            }}
-                        />
                         <DropDown
                             data={Object.keys(columns)}
                             submitHandler={this.layoutSubmitHandler}
@@ -298,7 +304,7 @@ export default class Columns extends Component {
                         />
                     </Header>
                 </div>
-                <div className="container" onClick={this.reset}>
+                <div className="container" onClick={this.reset} style={{ filter: "" }}>
                     {this.displayTasks()}
                 </div>
             </div>
