@@ -15,7 +15,8 @@ body{
 }
 
 .container > div{
-  width: 20%;
+  flex-shrink: 0;
+  width: 300px;
   min-height: 90vh;
   min-width: 240px;
   border-radius: 5px;

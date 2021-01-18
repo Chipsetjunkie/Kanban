@@ -19,19 +19,24 @@ export default class Card extends Component {
                 <div className="card">
                     <div className="options">
                         <div>
-                            <img src={Default} width="128px" height="128px"/>
+                            <img src={Default} alt="..." width="128px" height="128px" />
                         </div>
-                            <div>
-                                <img src={edit} alt="edit..." width="16px" height="16px" onClick={() => editTask(id)} />
-                                <img src={trash} alt="trash..." width="16px" height="16px" onClick={() => purge(id)} />
-                            </div>
-                        </div>
-                        <div className="content">
-                            <p id="text">{text}</p>
-                            <p id="date">Deadline: <Moment format="YYYY.MM.DD">{date}</Moment></p>
+                        <div>
+                            <img src={edit} alt="edit..." width="16px" height="16px" onClick={() => editTask(id)} />
+                            <img src={trash} alt="trash..." width="16px" height="16px" onClick={() => purge(id)} />
                         </div>
                     </div>
+                    <div className="content">
+                        <select className="select-card" name="cars" id="cars" value={active} onChange={e => statusChange(e, id)}>
+                            {col.map(i => (
+                                <option key={'Option'+i} value={i} >{i}</option>
+                            ))}
+                        </select>
+                        <p id="text">{text}</p>
+                        <p id="date">Deadline: <Moment format="YYYY.MM.DD">{date}</Moment></p>
+                    </div>
                 </div>
+            </div>
         )
     }
 }

@@ -40,7 +40,7 @@ export default class index extends Component {
         const { date, title, image } = this.state
         return (
             <div className="task-modal">
-                <div class="task-close">
+                <div className="task-close">
                     <p onClick={this.props.closeModal}>x</p>
                 </div>
                 <div className="task-main">
@@ -49,8 +49,10 @@ export default class index extends Component {
                     </div>
                     <div>
                         <Input type={"text"} title={"Title"} value={title} name={"title"} onChange={this.changeHandler} />
-                        <Input type={"text"} title={"Image"} value={image} name={"image"} onChange={this.changeHandler} />
-                        <DatePicker selected={date} onChange={date => this.setStartDate(date)} />
+                        <Input type={"text"} title={"Image"} value={image} name={"image"} onChange={this.changeHandler} /> 
+                        {date?<DatePicker selected={typeof(date)==="object"?date:new Date(date)} onChange={date => this.setStartDate(date)} />: 
+                            <DatePicker selected={new Date()} onChange={date => this.setStartDate(date)} />
+                        }
                     </div>
                 </div>
                 <div>

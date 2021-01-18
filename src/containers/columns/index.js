@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import Card from "../../components/cards";
 import Header from "../../components/header";
-import Input from "../../components/input";
 import LaneModal from "../../components/lanemodal";
 import TaskModal from "../../components/taskmodal";
 
@@ -22,11 +21,11 @@ export default class Columns extends Component {
         newTask: { date: "", title: "", image: "", edit: false, id: null },
         order: [],
         drop: { search: "", active: [] },
-        dropCreate: { search: "", active: "Task", options: ['Task', 'Column'] },
         show: false,
         showModal: false,
-        activeModal: null
-
+        activeModal: null,
+        sort: true,
+        progress: 0
     }
 
     componentDidMount() {
@@ -39,23 +38,60 @@ export default class Columns extends Component {
         if (search || active) {
             active = active ? JSON.parse(active).map(i => keys[i]) : []
             if (data) {
-                this.setState({ tasks: data.tasks, columns: data.columns, drop: { search, active }, order: ord })
+                this.setState({ tasks: data.tasks, columns: data.columns, drop: { search, active }, order: data.order ? data.order : ord }, () => this.calcProgress())
             }
         } else {
             if (data) {
-                this.setState({ tasks: data.tasks, columns: data.columns, order: ord })
+                this.setState({ tasks: data.tasks, columns: data.columns, order: data.order ? data.order : ord }, () => this.calcProgress())
             }
         }
     }
 
     componentDidUpdate() {
-        // const data = { tasks: this.state.tasks, columns: this.state.columns }
-        // localStorage.setItem("tasks", JSON.stringify(data));
+        const data = { tasks: this.state.tasks, columns: this.state.columns, order: this.state.order }
+        localStorage.setItem("tasks", JSON.stringify(data));
+
     }
 
     reset = () => {
         this.setState({
             show: false,
+        })
+    }
+
+    // **************  Helpers
+    calcProgress = () => {
+        let total_tasks = Object.keys(this.state.tasks).length
+        let total_columns = this.state.order.length
+        var n = 0;
+        this.state.order.forEach((i, id) => {
+            let c = this.state.columns[i]
+            n += (c.contents.length) * ((id) / (total_columns - 1))
+        })
+        this.setState({ progress: Math.round(100 * (n / total_tasks)) })
+
+    }
+
+
+
+    sortTasks = col => {
+        let contents = [...this.state.columns[col].contents]
+        let tasks = contents.map(i => this.state.tasks['task_' + i])
+        if (this.state.sort) {
+            tasks.sort((a, b) => (a.date > b.date) ? 1 : -1)//asc 
+        }
+        else {
+            tasks.sort((a, b) => (a.date > b.date) ? -1 : 1)//desc
+        }
+        contents = tasks.map(i => i.id)
+        this.setState({
+            columns: {
+                ...this.state.columns,
+                [col]: {
+                    contents
+                }
+            },
+            sort: !this.state.sort
         })
     }
 
@@ -69,12 +105,18 @@ export default class Columns extends Component {
 
     // **************   Modal Controls
     open = name => {
-        console.log("entered")
-        this.setState({ showModal: true, activeModal: name })
+            this.setState({
+                showModal: true,
+                activeModal: name,
+            })
     }
 
     close = () => {
-        this.setState({ showModal: false, activeModal: null })
+        this.setState({ 
+            showModal: false, 
+            activeModal: null,
+            newTask: { date: "", title: "", image: "", edit: false, id: null }
+        })
     }
 
     // **************   Filter DropDown
@@ -110,7 +152,7 @@ export default class Columns extends Component {
 
 
     createColumn = (columns, order) => {
-        this.setState({ columns, order, showModal: false, activeModal: null })
+        this.setState({ columns, order, showModal: false, activeModal: null }, () => this.calcProgress())
     }
 
     // ************** Task creations
@@ -118,7 +160,7 @@ export default class Columns extends Component {
 
 
     createTask = (data) => {
-        console.log("entered create")
+        const col = this.state.order[0]
         const id = uuidv4()
         const i = data.title
         this.setState({
@@ -129,15 +171,15 @@ export default class Columns extends Component {
                     text: i,
                     date: data.date,
                     modify: false,
-                    active: "todo",
+                    active: col,
                     image: data.image
                 }
             },
             columns: {
                 ...this.state.columns,
-                "todo": {
+                [col]: {
                     contents: [
-                        ...this.state.columns["todo"].contents,
+                        ...this.state.columns[col].contents,
                         id
                     ]
                 }
@@ -146,7 +188,7 @@ export default class Columns extends Component {
                 ...this.state.dropCreate,
                 search: ""
             },
-            showOptions:false,
+            showOptions: false,
             showModal: false,
             activeModal: null
         })
@@ -171,27 +213,22 @@ export default class Columns extends Component {
     }
 
     editTask = id => {
-        console.log(id)
         const updateTasks = Object.assign(this.state.tasks, {})
         const task = updateTasks['task_' + id]
-        let newTask = task.modify ? { title: "", image: "", date: "", edit: false, id: null } :
-            { title: task.text, image: task.image, date: task.date, edit: true, id }
-
+        let newTask = { title: task.text, image: task.image, date: task.date, edit: true, id }
         task.modify = !task.modify
         updateTasks['task_' + id] = task
-        this.setState({ tasks: updateTasks, newTask, showModal: !this.state.showModal })
+        this.setState({ tasks: updateTasks, newTask }, () => this.open('tsk'))
     }
 
     editTaskContent = (data) => {
-        console.log("entered edit")
         const updateTasks = { ...this.state.tasks }
         const task = updateTasks['task_' + data.id]
-        console.log(task)
         task.text = data.title
         task.date = data.date
         task.image = data.image
         updateTasks['task_' + data.id] = task
-        this.setState({ tasks: updateTasks, showLaneModal: false, newTask: { title: "", image: "", date: "", edit: false, id: null } })
+        this.setState({ tasks: updateTasks, showModal: false, newTask: { title: "", image: "", date: "", edit: false, id: null } })
     }
 
     statusChange = (e, id) => {
@@ -215,8 +252,8 @@ export default class Columns extends Component {
                         id
                     ]
                 }
-            }
-        })
+            },
+        }, () => this.calcProgress())
     }
 
     showOptions = () => {
@@ -239,7 +276,7 @@ export default class Columns extends Component {
             <Fragment key={i + "div"}>
                 {this.state.drop.active.length === 0 || this.state.drop.active.includes(id) ?
                     <div className="swimlane">
-                        <p className="title">{i} {this.state.columns[i].contents.length}</p>
+                        <p className="title">{i} {this.state.columns[i].contents.length} <span onClick={() => this.sortTasks(i)}>sort</span></p>
                         {
                             this.state.columns[i].contents.map(j => {
                                 if (cleanedData.includes('task_' + j)) {
@@ -264,7 +301,7 @@ export default class Columns extends Component {
 
 
     render() {
-        let { dropCreate, columns, drop, showOptions, showModal, order, newTask, activeModal } = this.state
+        let { columns, drop, showOptions, showModal, order, newTask, activeModal, progress } = this.state
         return (
             <div className="main-container">
                 <Modal
@@ -282,12 +319,13 @@ export default class Columns extends Component {
                     <TaskModal
                         closeModal={this.close}
                         changeHandler={this.changeTask}
-                        newTask={newTask}
+                        newTask={{ ...newTask }}
                         createTask={this.TaskCreator}
                     />
                 </Modal>
                 <div style={{ filter: "" }}>
                     <Header
+                        percentage={progress}
                         data={{
                             createTask: this.create,
                             showOptions,
@@ -297,7 +335,7 @@ export default class Columns extends Component {
                         }}
                     >
                         <DropDown
-                            data={Object.keys(columns)}
+                            data={this.state.order}
                             submitHandler={this.layoutSubmitHandler}
                             inputData={Object.assign(drop, {})}
                             toggle={this.toggleDropdown}

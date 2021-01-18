@@ -7,7 +7,6 @@ export default class Modal extends Component {
 
     render() {
         let {active} = this.props
-        console.log(active)
         return (
             <>
                 {this.props.showModal ?

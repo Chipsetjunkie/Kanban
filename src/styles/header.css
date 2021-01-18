@@ -1,33 +1,47 @@
-.header{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width:100%;
-    padding:15px;
-    box-shadow: 0px 5px 20px -16px rgba(0,0,0,1);
-  }
-  
-  .header>div{
-    width: 400px;
-    display:flex;
-    align-items: center;
-  }
-  
-  .header #create-task{
-    cursor: pointer;
-  }
-  
-  .header button{
-    border: 0;
-    font-weight: bold;
-    margin-left: 10px;
-    background: rgba(27, 30 ,59);
-    border-radius: 5px;
-    padding: 10px;
-    color:white;
-    cursor: pointer;
-  }
-  
-  .header button:nth-child(2):disabled{
-    background: rgba(27, 30 ,59,0.2);
-  }
+.header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  padding: 15px;
+  box-shadow: 0px 5px 20px -16px rgba(0, 0, 0, 1);
+}
+
+.header>div {
+  width: 400px;
+  display: flex;
+  align-items: center;
+}
+
+.header #create-task {
+  cursor: pointer;
+}
+
+.header button {
+  border: 0;
+  font-weight: bold;
+  margin-left: 10px;
+  background: rgba(27, 30, 59);
+  border-radius: 5px;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.header button:nth-child(2):disabled {
+  background: rgba(27, 30, 59, 0.2);
+}
+
+.header-progress{
+  position: absolute;
+  height: 150px;
+  width: 150px;
+  margin-top: -2.5%;
+  margin-left: 17.9%;
+  background: white;
+  box-shadow: -8px 15px 20px -16px rgba(0, 0, 0, 0.4);
+  border-radius:100%;
+  padding:20px;
+}
+
+/* 103 25 148 */

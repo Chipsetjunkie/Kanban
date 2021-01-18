@@ -11,20 +11,20 @@ export default class TaskModal extends Component {
         title: "",
         degree: 1,
         order: [],
-        cols:{},
+        cols: {},
         edit: false,
         old: null
     }
 
     componentDidMount() {
-        let { order,cols } = this.props.data
+        let { order, cols } = this.props.data
         this.setState({ order, cols })
     }
 
 
-  
+
     editContent = (i, deg) => {
-        this.setState({ title: i, degree: deg, edit: true, old: deg-1 })
+        this.setState({ title: i, degree: deg, edit: true, old: deg - 1 })
 
     }
 
@@ -66,41 +66,41 @@ export default class TaskModal extends Component {
         let degree = this.state.degree
         let title = this.state.title
 
-        if (!this.state.edit){
-            ord.splice(degree-1,0,title)
+        if (!this.state.edit) {
+            ord.splice(degree - 1, 0, title)
             this.setState({
-                order:ord,
-                cols:{
+                order: ord,
+                cols: {
                     ...this.state.cols,
-                    [title]:{
-                        contents:[]
+                    [title]: {
+                        contents: []
                     }
                 }
             })
         }
-        else{
-            let oldKey= ord.splice(this.state.old,1)
-            let cols = {...this.state.cols}
+        else {
+            let oldKey = ord.splice(this.state.old, 1)
+            let cols = { ...this.state.cols }
             let copyOld = cols[oldKey]
             delete cols[oldKey]
             cols[title] = copyOld
-            ord.splice(degree-1,0,title)
+            ord.splice(degree - 1, 0, title)
             this.setState({
-                order:ord,
+                order: ord,
                 cols,
-                edit:false
+                edit: false
             })
         }
-        
+
     }
 
-    deleteColumn = id =>{
+    deleteColumn = id => {
         let ord = [...this.state.order]
-        let cols = {...this.state.cols} 
+        let cols = { ...this.state.cols }
         delete cols[ord[id]]
-        ord.splice(id,1)
+        ord.splice(id, 1)
         this.setState({
-            order:ord,
+            order: ord,
             cols
         })
     }
@@ -111,7 +111,7 @@ export default class TaskModal extends Component {
                 <div className="lane-main" key={"task" + id}>
                     <div className="lane-options">
                         <p onClick={() => this.editContent(i, id + 1)}>{id + 1}</p>
-                        <img src={Close} alt="..." width="8px" height="8px" onClick={()=>this.deleteColumn(id)}></img>
+                        <img src={Close} alt="..." width="8px" height="8px" onClick={() => this.deleteColumn(id)}></img>
                     </div>
                     <p>{i}</p>
                 </div >)
@@ -124,26 +124,30 @@ export default class TaskModal extends Component {
         const { degree, title, order, cols } = this.state
         return (
             <div className="lane-manager">
-                <p onClick={this.props.closeModal}>x</p>
-                <div className="lane-fill">
-                    <div>
-                        <input placeholder="title" value={title} onChange={this.changeText}></input>
-                        <input type="number" value={degree} onChange={this.changeDegree} />
-
-                    </div>
+                <div>
+                    <p onClick={this.props.closeModal}>x</p>
                 </div>
-                <div className="lane-date">
-                    <div>
-                        {this.state.edit ? <><button onClick={this.cancelEdit}>Cancel</button><button onClick={this.addColumn}>Modify</button></> :
-                            <><button>Cancel</button>
-                            <button onClick={this.addColumn}>Add</button>
-                            <button onClick={() => this.props.createColumn(cols,order)}>Apply</button>
-                            </>
-                        }
+                <div className="lane-content">
+                    <div className="lane-fill">
+                        <div>
+                            <input placeholder="title" value={title} onChange={this.changeText}></input>
+                            <input type="number" value={degree} onChange={this.changeDegree} />
+
+                        </div>
+                    </div>
+                    <div className="lane-date">
+                        <div>
+                            {this.state.edit ? <><button onClick={this.addColumn}>Modify</button><button onClick={this.cancelEdit}>Cancel</button></> :
+                                <><button onClick={this.addColumn}>Add</button><button>Cancel</button></>
+                            }
+                        </div>
                     </div>
                 </div>
                 <div className="lane-preview">
                     {this.displayTasks()}
+                </div>
+                <div>
+                    <button onClick={() => this.props.createColumn(cols, order)}>Apply</button>
                 </div>
             </div>
         )
